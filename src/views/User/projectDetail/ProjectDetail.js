@@ -31,7 +31,7 @@ const ProjectDetail = () => {
   const { id } = useParams()
   const [item, setItem] = useState()
   const [student1, SetStudent1] = useState()
-  const [student2, SetStudent2] = useState()
+  const [student2, SetStudent2] = useState(null)
   const [activeKey, setActiveKey] = useState(1)
   const [progress, SetProgress] = useState([])
   const [projectDetail, SetProjectDetail] = useState([])
@@ -41,11 +41,15 @@ const ProjectDetail = () => {
       const result = await projectServices.getProjectbyID(id)
       const fetchApi1 = async () => {
         const result2 = await studentServices.getStudentbyID(result[0].student1Id)
-        const result3 = await studentServices.getStudentbyID(result[0].student2Id)
+        if (result[0].student2Id != null) {
+          const result3 = await studentServices.getStudentbyID(result[0].student2Id)
+          SetStudent2(result3.sName)
+          console.log("Not null")
+        }
+
         const result4 = await projectProgressServices.GetProjectProgressByProjectID(result[0].projectId)
         const result5 = await projectDetailServices.getTagByProjectID(result[0].projectId)
         SetStudent1(result2.sName)
-        SetStudent2(result3.sName)
         SetProgress(result4)
         SetProjectDetail(result5)
       }

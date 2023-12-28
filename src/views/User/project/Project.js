@@ -10,24 +10,14 @@ import {
   CCardBody,
   CButton,
   CCollapse,
-  CRow,
-  CCol,
-  CContainer,
-  CFormCheck,
   CInputGroup,
   CFormLabel,
   CFormInput,
   CInputGroupText,
+  CBadge,
   CModal,
   CModalHeader,
-  CModalTitle,
   CModalBody,
-  CFormSelect,
-  CModalFooter,
-  CToast,
-  CToastHeader,
-  CToastBody,
-  CToaster,
 } from '@coreui/react'
 
 var topicRegister = {
@@ -61,14 +51,33 @@ var mailData = {
 
 const Project = () => {
   const [details, setDetails] = useState([])
-  const [toast, addToast] = useState(0)
   const [topic, setTopic] = useState([])
   const [subject, setSubject] = useState()
   const [checkTopic, setCheckTopic] = useState()
   const [code1, setInputValue1] = useState('')
   const [code2, setInputValue2] = useState('')
-  const toaster = useRef()
+  const [showMessage, setShowMessage] = useState()
+  const [status, setStatus] = useState()
+  const [visible, setVisible] = useState(false)
+  const [visibleSuccess, setVisibleSuccess] = useState(false)
 
+  const getBadge = (status) => {
+    switch (status) {
+      case 'Warning':
+        return 'warning'
+      case 'Error':
+        return 'danger'
+      case 'Notification':
+        return 'info'
+      default:
+        return 'success'
+    }
+  }
+  const registerSuccess = () => {
+    console.log("reload")
+    window.location.reload();
+    setVisibleSuccess(false)
+  }
   var account = JSON.parse(sessionStorage.getItem('account'))
 
   const addTopicRegister = (topicID, topicName, request, description, instructorId, subjectId) => {
@@ -103,10 +112,30 @@ const Project = () => {
       } else {
         const checkStudent2 = await studentServices.CheckStudentID(document.getElementById('studentCode2').value)
 
-      if (checkStudent2 === false) {
-        alert("Student's code 2 doesn't exist");
-        return;
-      }
+        if (checkStudent2 === false) {
+          setVisible(!visible)
+          setShowMessage("Student 2 doesn't exist")
+          setStatus('Warning')
+          return;
+        }
+        else {
+          const checkStudent3 = await studentServices.GetCurrentSubject(document.getElementById('studentCode2').value)
+
+          if (checkStudent3 != subject) {
+            setVisible(!visible)
+            setShowMessage("Student 2 didn't assign this subject!")
+            setStatus('Warning')
+            return;
+          }
+        }
+        const checkStudent4 = await topicRegisterServices.CheckRegisteredStudent(document.getElementById('studentCode2').value)
+
+          if (checkStudent4 === true) {
+            setVisibleSuccess(!visible)
+            setShowMessage("Student 2 have registered another topic!")
+            setStatus('Warning')
+            return;
+          }
 
       topicRegister.student2Id = document.getElementById('studentCode2').value
       project.student2Id = document.getElementById('studentCode2').value
@@ -134,11 +163,14 @@ const Project = () => {
       {
         console.log(project)
         const projectResult = await projectServices.createProject(project)
+        setVisible(!visible)
+        setShowMessage("The project has been successfully registered. Please switch to the current project page!")
+        setStatus('Success')
         //console.log(projectResult)
+
       }
     }
     fetchApi()
-    console.log(topicRegister);
   }
 
   const getMailData = (topicName, studentID, status) => {
@@ -188,15 +220,38 @@ const Project = () => {
   ]
   useEffect(() => {
     const fetchApi = async () => {
-      const result = await studentServices.GetCurrentSubject(account.email);
-      console.log(result)
-      setSubject(result)
-      const fetchApi1 = async () => {
-        console.log(subject)
-        const result1 = await topicServices.getTopicbySubject(result)
-        setTopic(result1)
+      const checkRegisted = async () => {
+        const CheckRegisteredStudent = await topicRegisterServices.CheckRegisteredStudent(account.email)
+        if (CheckRegisteredStudent === true) {
+          setVisible(!visible)
+          setShowMessage("You have registered for the project. Please switch to the current project page!")
+          setStatus('Notification')
+        }
+        else {
+          const result = await studentServices.GetCurrentSubject(account.email);
+          console.log(result)
+          setSubject(result)
+          const fetchApi1 = async () => {
+          //console.log(subject)
+            const result1 = await topicServices.getTopicbySubject(result)
+            return result1;
+          } 
+          var newProjectResource = await fetchApi1();
+          var fileArr = [];
+          const fetchApi2 = async () => {
+            console.log(newProjectResource)
+            for (var i = 0; i < newProjectResource.length; i++) {
+              const result1 = await topicRegisterServices.CheckTopic(newProjectResource[i].topicId)
+              if (result1 === false) {
+                fileArr.push(newProjectResource[i])
+              }
+            }
+            setTopic(fileArr)
+          }
+          fetchApi2()
+        }
       }
-      fetchApi1()
+      checkRegisted()     
     }
     fetchApi()
 
@@ -228,28 +283,6 @@ const Project = () => {
     }
     setDetails(newDetails)
   }
-  const exampleToast = (
-    <CToast>
-      <CToastHeader closeButton>
-        <svg
-          className="rounded me-2"
-          width="20"
-          height="20"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="xMidYMid slice"
-          focusable="false"
-          role="img"
-        >
-          <rect width="100%" height="100%" fill="#007aff"></rect>
-        </svg>
-        <div className="fw-bold me-auto">Notifications</div>
-      </CToastHeader>
-      <CToastBody>
-        Đồ án đã được chuyển sang danh sách chờ được xét duyệt. Kiểm tra danh sách đồ án chờ được
-        xét duyệt để tránh trường hợp có người đã đăng ký trước.
-      </CToastBody>
-    </CToast>
-  )
   return (
     <div>
       <CSmartTable
@@ -271,23 +304,19 @@ const Project = () => {
           name: (item) => <td style={{ fontWeight: 'bold' }}>{item.name}</td>,
           show_details: (item) => {
             return (
-              1==1 ? (
-                <td className="py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    onClick={() => {
-                      toggleDetails(item.topicId)
-                    }}
-                  >
-                    {details.includes(item.topicId) ? 'Hide' : 'Show'}
-                  </CButton>
-                </td>
-              ) : (
-                <></>
-              )              
+              <td className="py-2">
+                <CButton
+                  color="primary"
+                  variant="outline"
+                  shape="square"
+                  size="sm"
+                  onClick={() => {
+                    toggleDetails(item.topicId)
+                  }}
+                >
+                  {details.includes(item.topicId) ? 'Hide' : 'Show'}
+                </CButton>
+              </td>             
             )
           },
           details: (item) => {
@@ -323,7 +352,6 @@ const Project = () => {
                     <CButton size="sm" color="info" onClick={() => addTopicRegister(item.topicId, item.topicName, item.request, item.description, item.instructorId, item.subjectId)}>
                       Register
                     </CButton>
-                    <CToaster ref={toaster} push={toast} placement="top-end" />
                   </div>
                 </CCardBody>
               </CCollapse>
@@ -341,6 +369,36 @@ const Project = () => {
           className: 'align-middle',
         }}
       />
+      <CModal
+        alignment="center"
+        visible={visible}
+        onClose={() => setVisible(false)}
+        aria-labelledby="VerticallyCenteredExample"
+      >
+        <CModalHeader>
+          <CBadge color={getBadge(status)} style={{ fontSize: 16 }}>
+            {status}
+          </CBadge>                            
+        </CModalHeader>
+        <CModalBody>
+          <h6>{showMessage}</h6>
+        </CModalBody>
+      </CModal>
+      <CModal
+        alignment="center"
+        visible={visibleSuccess}
+        onClose={() => registerSuccess()}
+        aria-labelledby="VerticallyCenteredExample"
+      >
+        <CModalHeader>
+          <CBadge color={getBadge(status)} style={{ fontSize: 16 }}>
+            {status}
+          </CBadge>                            
+        </CModalHeader>
+        <CModalBody>
+          <h6>{showMessage}</h6>
+        </CModalBody>
+      </CModal>
     </div>
   )
 }

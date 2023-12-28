@@ -1,11 +1,12 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { CSmartTable } from '@coreui/react-pro'
 import * as projectServices from '../../../apiServices/projectServices'
 import * as instructorServices from '../../../apiServices/instructorServices'
 import * as studentServices from '../../../apiServices/studentServices'
 import * as projectProgressServices from '../../../apiServices/projectProgressServices'
 import * as projectDetailServices from '../../../apiServices/projectDetailServices'
+import * as projectResourceServices from '../../../apiServices/projectResourceServices'
 import * as tagServices from '../../../apiServices/tagServices'
 import dateFormat from 'dateformat'
 
@@ -36,6 +37,10 @@ import {
   CFormTextarea,
   CFormSelect,
   CModalFooter,
+  CToast,
+  CToastHeader,
+  CToastBody,
+  CToaster,
 } from '@coreui/react'
 import { cilCursor } from '@coreui/icons'
 
@@ -46,13 +51,23 @@ const ProjectDetail = () => {
   const [student2, SetStudent2] = useState()
   const [progress, SetProgress] = useState([])
   const [project, SetProject] = useState()
+  const [file, setFile] = useState(null)
+  const [files, setFiles] = useState([]);
+  const [links, setLinks] = useState([]);
+  const [link, setLink] = useState();
   const [projectDetail, SetProjectDetail] = useState([])
   const [tag, SetTag] = useState()
   const [selectedOption, setSelectedOption] = useState()
   const [visibleXL, setVisibleXL] = useState(false)
   const [visible, setVisible] = useState(false)
   const [activeKey, setActiveKey] = useState(1)
+  const [selectedDate, setSelectedDate] = useState('')
+  const [toast, addToast] = useState(0)
+  const [message, SetMessage] = useState()
+  const toaster = useRef()
+
   var account = JSON.parse(sessionStorage.getItem('account'))
+  const today = new Date().toISOString().split('T')[0];
 
   var projectProgress = {
     progressID: 0,
@@ -73,6 +88,13 @@ const ProjectDetail = () => {
     note: '',
   }
 
+  var projectResource = {
+    resourcesId: 0,
+    projectId: 0,
+    resourcesName: '',
+    filePath:''
+  };
+
   const addProgress = () => {
 
     if (Date.parse(document.getElementById('startDate').value) > Date.parse(document.getElementById('endDate').value)) {
@@ -83,7 +105,7 @@ const ProjectDetail = () => {
     projectProgress.projectId = project.projectId
     projectProgress.studentID = document.getElementById('sID').value
     projectProgress.progressName = document.getElementById('task').value
-    projectProgress.startDate = document.getElementById('startDate').value
+    projectProgress.startDate = selectedDate
     projectProgress.endDate = document.getElementById('endDate').value
     
 
@@ -95,20 +117,75 @@ const ProjectDetail = () => {
     fetchApi()
     setVisibleXL(!visibleXL)
   }
+  const UploadFile = async () => {
+    //e.preventDefault()
+    //var newId = Number(id);
+    SetMessage("Please input file!")
+    if (file == null) {
+      await addToast(exampleToast)
+      return
+    }
+    else {
+      projectResource.projectId = project.projectId
+      projectResource.resourcesName = file.name
+      console.log(file.name)
 
-  const handleFileUpload = async (event) => {
-    // const file = event.target.files[0]
-    // const rows = await readXlsxFile(file)
-    // const headers = rows[0]
-    // const data = rows.slice(1).map((row) => {
-    //   return headers.reduce((obj, header, index) => {
-    //     obj[header] = row[index]
-    //     return obj
-    //   }, {})
-    // })
-    // setItems(data)
+      const fetchApi = async () => {
+        const result = await projectResourceServices.UploadFile(file)
+        projectResource.resourcesName = result
+        
+        const fetchApi1 = async () => {
+          const GetResources = async () => {
+            const result2 = await projectResourceServices.DownloadFile(result)
+            projectResource.filePath = result2
+            setLink(result2)
+            return projectResource;
+          }
+          var newProjectResource = await GetResources();
+          const result1 = await projectResourceServices.createProjectResource(newProjectResource);
+          addToast(exampleToast)
+          const fetchApi2 = async () => {
+            const result = await projectServices.GetCurrentProject(account.email)
+            SetProject(result)
+            const fetchApi3 = async () => {
+              var fileArr = [];
+              const fileResult = await projectResourceServices.getProjectResourcebyID(result.projectId);
+              setFiles(fileResult);
+              
+              for (var i = 0; i < fileResult.length; i++) {
+                fileArr.push(fileResult[i].resourcesName)
+              }
+              setLinks(fileArr);
+            }
+            fetchApi3()      
+          }
+          fetchApi2()
+        }
+        fetchApi1()      
+      }
+      fetchApi()
+    }   
   }
 
+  // const GetFile = async () => {
+  //   const fetchApi = async () => {
+  //     for (var i = 0; i < links.length; i++) {
+  //       const result1 = await projectResourceServices.DownloadFile(links[i])
+  //       console.log(result1);
+  //       setLink(result1)
+  //     }    
+  //   }
+  //   fetchApi()
+  // }
+
+  const handleFileUpload = async (event) => {
+    setFile(event.target.files[0])
+    SetMessage("Add file success!")
+
+  }
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value)
+  }
   const addTag = () => {
 
     // if (Date.parse(document.getElementById('startDate').value) > Date.parse(document.getElementById('endDate').value)) {
@@ -135,11 +212,14 @@ const ProjectDetail = () => {
     setSelectedOption(e.target.value);
   };
 
-  useEffect(() => {
-    
+  useEffect(() => { 
     const fetchApi = async () => {
-      const result = await projectServices.GetCurrentProject(account.email)
-      //console.log(result)
+      const check = await projectServices.CheckProjectExist(account.email)
+      if (check === false) {
+        return
+      }
+      else {
+        const result = await projectServices.GetCurrentProject(account.email)
       SetProject(result)
       const fetchApi1 = async () => {
         const result1 = await instructorServices.getInstructorbyID(result.instructorId)
@@ -148,7 +228,16 @@ const ProjectDetail = () => {
         const result4 = await projectProgressServices.GetProjectProgressByProjectID(result.projectId)
         const result5 = await projectDetailServices.getTagByProjectID(result.projectId)
         const result6 = await tagServices.getTag()
-        console.log(result5)
+
+        var fileArr = [];
+        const fileResult = await projectResourceServices.getProjectResourcebyID(result.projectId);
+        setFiles(fileResult);
+        
+        for (var i = 0; i < fileResult.length; i++) {
+          fileArr.push(fileResult[i].resourcesName)
+        }
+        setLinks(fileArr);
+
         setInstructor(result1.iName)
         SetStudent1(result2)
         SetStudent2(result3)
@@ -158,6 +247,7 @@ const ProjectDetail = () => {
       }
       fetchApi1()      
       setItem(result)
+      }
     }
     fetchApi()
     
@@ -180,6 +270,27 @@ const ProjectDetail = () => {
         return 'info'
     }
   }
+  const exampleToast  = (
+    <CToast>
+      <CToastHeader closeButton>
+        <svg
+          className="rounded me-2"
+          width="20"
+          height="20"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+          focusable="false"
+          role="img"
+        >
+          <rect width="100%" height="100%" fill="#007aff"></rect>
+        </svg>
+        <div className="fw-bold me-auto">Notifications</div>
+      </CToastHeader>
+      <CToastBody>
+        {message}
+      </CToastBody>
+    </CToast>
+  )
   return (
     <div>
       {item ? (
@@ -308,9 +419,9 @@ const ProjectDetail = () => {
                             </CInputGroup>
                             <CInputGroup className="mb-3">
                                 <CInputGroupText id="start">Start date</CInputGroupText>
-                                <CFormInput type="date" id="startDate"/>
+                                <CFormInput type="date" id="startDate" value={selectedDate} onChange={handleDateChange}/>
                                 <CInputGroupText id="end">End date</CInputGroupText>
-                                <CFormInput type="date" id="endDate"/>
+                                <CFormInput type="date" id="endDate" min={selectedDate}/>
                             </CInputGroup>
                         <div className="gap-2 d-md-flex justify-content-md-end">
                             <CButton color="info" onClick={() => addProgress()}>
@@ -361,16 +472,28 @@ const ProjectDetail = () => {
                   <div className="gap-2 d-md-flex justify-content-md-start m-3">
                     <div className="d-flex w-100">
                       <CFormInput type="file" onChange={handleFileUpload} />
-                      <CButton className="" color='light' type="file" onChange={handleFileUpload} >Add</CButton>
-                    </div>
+                      <CButton className="" color='light' onClick={UploadFile}>Add</CButton>
+                      <CToaster ref={toaster} push={toast} placement="top-end" />
+                    </div>                
                   </div>
+                  <div className="d-flex w-100 m-3">
+                      <CListGroup accent="success">
+                        {files.map((item)=>(
+                            <CListGroupItem key={item.resourcesId}>
+                              <div className="d-flex flex-row">
+                                <a href={item.filePath}>{item.resourcesName}</a>
+                              </div>
+                          </CListGroupItem>
+                        ))}       
+                      </CListGroup>
+                    </div>
                 </CTabPane>
               </CTabContent>
             </CCardBody>
           </CCard>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p>You have not registered the project yet</p>
       )}
     </div>
   )
