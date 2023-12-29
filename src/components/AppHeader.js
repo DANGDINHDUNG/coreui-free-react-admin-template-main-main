@@ -44,7 +44,7 @@ const AppHeader = () => {
             </CNavItem>
             <CNavItem>
               <CNavLink to="/lecturer" component={NavLink}>
-                Lecturers
+                Instructor
               </CNavLink>
             </CNavItem>
             <CNavItem>
@@ -58,13 +58,13 @@ const AppHeader = () => {
               </CNavLink>
             </CNavItem>            
             <CNavItem>
-              <CNavLink to="/accountManager" component={NavLink}>
-                Account Manager
+              <CNavLink to="/tag" component={NavLink}>
+                Tag
               </CNavLink>
             </CNavItem>
             <CNavItem>
-              <CNavLink to="/tag" component={NavLink}>
-                Tag
+              <CNavLink to="/setting" component={NavLink}>
+                Setting
               </CNavLink>
             </CNavItem>
           </CHeaderNav>
@@ -84,12 +84,17 @@ const AppHeader = () => {
           <CHeaderBrand className="mx-auto d-md-none" to="/">
             <CIcon icon={logo} height={48} alt="Logo" />
           </CHeaderBrand>
-          <CHeaderNav className="d-none d-md-flex me-auto">                          
+          <CHeaderNav className="d-none d-md-flex me-auto"> 
+            <CNavItem>
+              <CNavLink to="/currentProjectForInstructor" component={NavLink}>
+                Current Project
+              </CNavLink>
+            </CNavItem>                           
             <CNavItem>
               <CNavLink to="/lecturerInfoPage" component={NavLink}>
                 Personal Info
               </CNavLink>
-            </CNavItem>           
+            </CNavItem>                    
           </CHeaderNav>
           <CHeaderNav className="ms-3">
             <AppHeaderDropdown />

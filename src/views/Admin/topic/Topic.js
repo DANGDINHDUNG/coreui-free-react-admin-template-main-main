@@ -44,11 +44,6 @@ const Topic = () => {
       sorter: false,
     },
     {
-      key: 'description',
-      filter: false,
-      sorter: false,
-    },
-    {
       key: 'instructorId',
       sorter: false,
       _style: { width: '10%' },

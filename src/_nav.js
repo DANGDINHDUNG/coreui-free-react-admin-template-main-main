@@ -25,7 +25,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Lecturers',
+    name: 'Instructor',
     to: '/lecturer',
     icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
   },
@@ -49,14 +49,14 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Account Manager',
-    to: '/accountManager',
+    name: 'Tag',
+    to: '/tag',
     icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Tag',
-    to: '/tag',
+    name: 'Setting',
+    to: '/setting',
     icon: <CIcon icon={cilAddressBook} customClassName="nav-icon" />,
   },
   {

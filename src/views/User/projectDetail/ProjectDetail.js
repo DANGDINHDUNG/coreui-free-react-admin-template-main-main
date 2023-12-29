@@ -46,8 +46,7 @@ const ProjectDetail = () => {
         const result2 = await studentServices.getStudentbyID(result[0].student1Id)
         if (result[0].student2Id != null) {
           const result3 = await studentServices.getStudentbyID(result[0].student2Id)
-          SetStudent2(result3.sName)
-          console.log("Not null")
+          SetStudent2(result3)
         }
         var fileArr = [];
         const fileResult = await projectResourceServices.getProjectResourcebyID(result[0].projectId);
@@ -59,7 +58,7 @@ const ProjectDetail = () => {
         setLinks(fileArr);
         const result4 = await projectProgressServices.GetProjectProgressByProjectID(result[0].projectId)
         const result5 = await projectDetailServices.getTagByProjectID(result[0].projectId)
-        SetStudent1(result2.sName)
+        SetStudent1(result2)
         SetProgress(result4)
         SetProjectDetail(result5)
       }
@@ -92,21 +91,31 @@ const ProjectDetail = () => {
       {item ? (
         <div>
           <CCard>
-            <CCardBody>
-              <h1 style={{ fontSize: 24 }}>{item.projectName}</h1>
-              <CContainer>
-                <CRow>
-                  <CCol xs="1" style={{ paddingLeft: 0 }}>
-                    <CBadge color="success" style={{ fontSize: 14 }}>
-                      Project {item.subjectId}
-                    </CBadge>
-                  </CCol>
-                  <CCol xs="11">
-                    <p>Lecturer: {item.iName}</p>
-                  </CCol>
-                </CRow>
-              </CContainer>
-            </CCardBody>
+            <CRow>
+              <CCol sm="10">
+                <CCardBody>
+                  <h1 style={{ fontSize: 24 }}>{item.projectName}</h1>
+                  <CContainer>
+                    <CRow>
+                      <CCol xs="2" style={{ paddingLeft: 0 }}>
+                        <CBadge color="success" style={{ fontSize: 14 }}>
+                          Project {item.subjectId}
+                        </CBadge>
+                      </CCol>
+                      <CCol xs="10">
+                        <p>Lecturer: {item.iName}</p>
+                      </CCol>
+                    </CRow>
+                  </CContainer>
+                </CCardBody>
+              </CCol>
+              <CCol sm="2">            
+                <CCardBody>
+                  <p style={{ textAlign:'center' }}>Point: </p>
+                  <p style={{ fontSize: 18, textAlign:'center' }}><strong>{item.point}</strong></p>
+                </CCardBody>
+              </CCol>
+            </CRow>
           </CCard>
           <br />
           <h1 style={{ fontSize: 20 }}>Students participate</h1>
@@ -114,16 +123,24 @@ const ProjectDetail = () => {
             <CRow>
               <CCol xs={6} style={{ paddingLeft: 0 }}>
                 <CCard>
-                  <CCardBody>
-                    <p>Student 1: {student1}</p>
-                  </CCardBody>
+                    {student1 ? (                  <CCardBody>
+                    <p>Student 1: {student1.sName}</p>
+                  </CCardBody>): (                  <CCardBody>
+                    <p>Student 1: </p>
+                  </CCardBody>)}
+
                 </CCard>
               </CCol>
-              <CCol xs={6}>
+              <CCol xs={6} style={{ paddingRight: 0 }}>
                 <CCard>
+                {student2 ? (                  
+                <CCardBody>
+                    <p>Student 2: {student2.sName}</p>
+                  </CCardBody>): 
+                  (                  
                   <CCardBody>
-                    <p>Student 2: {student2}</p>
-                  </CCardBody>
+                    <p>Student 2: </p>
+                  </CCardBody>)}
                 </CCard>
               </CCol>
             </CRow>
@@ -134,7 +151,7 @@ const ProjectDetail = () => {
               <CNav variant="tabs">
                 <CNavItem>
                   <CNavLink active={activeKey === 1} onClick={() => setActiveKey(1)}>
-                    About
+                    Description
                   </CNavLink>
                 </CNavItem>
                 <CNavItem>

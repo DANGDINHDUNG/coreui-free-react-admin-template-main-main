@@ -37,6 +37,17 @@ export const createProject = async (project) => {
     console.log(error)
   }
 }
+export const GetProjectForInstructor = async (semester, year, instructorId) => {
+  try {
+    const response = await request.get(`/Project/GetProjectForInstructor?semester=${semester}&year=${year}&instructorId=${instructorId}`)
+    return response.data
+  } catch (error) {
+    if (error.response) {
+    } else if (error.request) {
+    } else {
+    }
+  }
+}
 export const getProjectbyID = async (id) => {
   try {
     const response = await request.get(`/Project/GetProjectByID/${id}`)

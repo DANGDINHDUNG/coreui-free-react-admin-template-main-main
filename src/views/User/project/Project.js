@@ -14,10 +14,11 @@ import {
   CFormLabel,
   CFormInput,
   CInputGroupText,
+  CToast,
+  CToastHeader,
+  CToastBody,
+  CToaster,
   CBadge,
-  CModal,
-  CModalHeader,
-  CModalBody,
 } from '@coreui/react'
 
 var topicRegister = {
@@ -56,10 +57,10 @@ const Project = () => {
   const [checkTopic, setCheckTopic] = useState()
   const [code1, setInputValue1] = useState('')
   const [code2, setInputValue2] = useState('')
-  const [showMessage, setShowMessage] = useState()
+  const [message, SetMessage] = useState()
   const [status, setStatus] = useState()
-  const [visible, setVisible] = useState(false)
-  const [visibleSuccess, setVisibleSuccess] = useState(false)
+  const [toast, addToast] = useState(0)
+  const toaster = useRef()
 
   const getBadge = (status) => {
     switch (status) {
@@ -73,11 +74,7 @@ const Project = () => {
         return 'success'
     }
   }
-  const registerSuccess = () => {
-    console.log("reload")
-    window.location.reload();
-    setVisibleSuccess(false)
-  }
+
   var account = JSON.parse(sessionStorage.getItem('account'))
 
   const addTopicRegister = (topicID, topicName, request, description, instructorId, subjectId) => {
@@ -113,27 +110,25 @@ const Project = () => {
         const checkStudent2 = await studentServices.CheckStudentID(document.getElementById('studentCode2').value)
 
         if (checkStudent2 === false) {
-          setVisible(!visible)
-          setShowMessage("Student 2 doesn't exist")
           setStatus('Warning')
+          SetMessage("Student 2 doesn't exist")
           return;
         }
         else {
           const checkStudent3 = await studentServices.GetCurrentSubject(document.getElementById('studentCode2').value)
 
           if (checkStudent3 != subject) {
-            setVisible(!visible)
-            setShowMessage("Student 2 didn't assign this subject!")
             setStatus('Warning')
+            SetMessage("Student 2 didn't assign this subject!")
+
             return;
           }
         }
         const checkStudent4 = await topicRegisterServices.CheckRegisteredStudent(document.getElementById('studentCode2').value)
 
           if (checkStudent4 === true) {
-            setVisibleSuccess(!visible)
-            setShowMessage("Student 2 have registered another topic!")
             setStatus('Warning')
+            SetMessage("Student 2 have registered another topic!")
             return;
           }
 
@@ -163,11 +158,10 @@ const Project = () => {
       {
         console.log(project)
         const projectResult = await projectServices.createProject(project)
-        setVisible(!visible)
-        setShowMessage("The project has been successfully registered. Please switch to the current project page!")
+        SetMessage("The project has been successfully registered. Please switch to the current project page!")
         setStatus('Success')
         //console.log(projectResult)
-
+        window.location.reload();
       }
     }
     fetchApi()
@@ -223,9 +217,8 @@ const Project = () => {
       const checkRegisted = async () => {
         const CheckRegisteredStudent = await topicRegisterServices.CheckRegisteredStudent(account.email)
         if (CheckRegisteredStudent === true) {
-          setVisible(!visible)
-          setShowMessage("You have registered for the project. Please switch to the current project page!")
-          setStatus('Notification')
+          SetMessage("You have registered for the project. Please switch to the current project page!")
+          setStatus('Success')
         }
         else {
           const result = await studentServices.GetCurrentSubject(account.email);
@@ -257,6 +250,24 @@ const Project = () => {
 
     
   }, [])
+
+  const exampleToast = (
+    <CToast>
+      <CToastHeader closeButton>
+        <div className="fw-bold me-auto">
+          <CBadge color={getBadge(status)} style={{ fontSize: 16 }}>
+            {status}
+          </CBadge>  
+        </div>
+      </CToastHeader>
+      <CToastBody>
+        {message}
+      </CToastBody>
+    </CToast>
+  )
+  useEffect(()=>{if(message){
+    addToast(exampleToast);
+  }}, [message])
 
   // Quy định số chữ số của Student's code
   const handleChange1 = (e) => {
@@ -369,36 +380,7 @@ const Project = () => {
           className: 'align-middle',
         }}
       />
-      <CModal
-        alignment="center"
-        visible={visible}
-        onClose={() => setVisible(false)}
-        aria-labelledby="VerticallyCenteredExample"
-      >
-        <CModalHeader>
-          <CBadge color={getBadge(status)} style={{ fontSize: 16 }}>
-            {status}
-          </CBadge>                            
-        </CModalHeader>
-        <CModalBody>
-          <h6>{showMessage}</h6>
-        </CModalBody>
-      </CModal>
-      <CModal
-        alignment="center"
-        visible={visibleSuccess}
-        onClose={() => registerSuccess()}
-        aria-labelledby="VerticallyCenteredExample"
-      >
-        <CModalHeader>
-          <CBadge color={getBadge(status)} style={{ fontSize: 16 }}>
-            {status}
-          </CBadge>                            
-        </CModalHeader>
-        <CModalBody>
-          <h6>{showMessage}</h6>
-        </CModalBody>
-      </CModal>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
     </div>
   )
 }

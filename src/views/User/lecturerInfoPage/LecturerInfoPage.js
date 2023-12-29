@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { CSmartTable } from '@coreui/react-pro'
 import { Link } from 'react-router-dom'
 import * as instructorServices from '../../../apiServices/instructorServices'
+import * as projectServices from '../../../apiServices/projectServices'
+import dateFormat from 'dateformat'
 
 import {
   CCard,
@@ -17,46 +19,69 @@ import {
 } from '@coreui/react'
 
 const LecturerInfoPage = () => {
-  const [lecturer, setLecturer] = useState([])
+  const [lecturer, setLecturer] = useState()
+  const [project, setProject] = useState([])
+  const [phoneNumber, setphoneNumber] = useState('')
 
   useEffect(() => {
     const fetchApi = async () => {
       const result = await instructorServices.GetInstructorByAccount(account.accountId)
+      const fetchApi1 = async () => {
+        const result1 = await projectServices.getProjectbyInstructor(result.instructorId)
+        setProject(result1)
+      }
+      fetchApi1()
       // const pj = await projectServices.getProject()
       // const selectedItem = result.find((item) => item.studentId === parseInt())
       // const selectedPj = pj.find((item) => item.student1Id === parseInt(account.email))
       setLecturer(result)
+      setphoneNumber(result.phoneNumber)
       console.log(account.accountId)
     }
     fetchApi()
   }, [])
   const columns = [
     {
-      key: 'id',
+      key: 'projectId',
+      label: 'Id',
       filter: false,
+      sorter: false,
       _style: { width: '5%' },
     },
     {
-      key: 'topic',
+      key: 'projectName',
+      label: 'Project Name',
       _style: { width: '40%' },
     },
     {
       key: 'request',
+      label: 'Request',
       filter: false,
       sorter: false,
     },
     {
-      key: 'description',
+      key: 'iName',
+      label: 'Instructor',
       filter: false,
       sorter: false,
     },
     {
-      key: 'instructor',
+      key: 'student1Id',
+      label: 'Student 1',
+      filter: false,
       sorter: false,
     },
     {
-      key: 'subject',
+      key: 'student2Id',
+      label: 'Student 2',
       sorter: false,
+      filter: false,
+    },
+    {
+      key: 'subjectName',
+      label: 'Subject',
+      sorter: false,
+      filter: false,
     },
     {
       key: 'show_details',
@@ -66,24 +91,14 @@ const LecturerInfoPage = () => {
       sorter: false,
     },
   ]
-  const usersData = [
-    {
-      id: 1,
-      topic: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      description: 'Project 1',
-      instructor: 1,
-      subject: 1,
-    },
-    {
-      id: 2,
-      topic: 'Ứng dụng đi chợ trực tuyến',
-      request: 'Yêu thích lập trình Web',
-      description: 'Project 1',
-      instructor: 1,
-      subject: 1,
-    },
-  ]
+  const handleChange1 = (e) => {
+    const value = e.target.value
+    // if (e.target.value)
+    // Limiting to 10 characters in this example
+    if (value.length <= 9) {
+      setphoneNumber(value)
+    }
+  }
 
   var account = JSON.parse(sessionStorage.getItem('account'));
 
@@ -99,7 +114,7 @@ const LecturerInfoPage = () => {
                   Họ và tên
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="staticEmail" value={lecturer.iName || ''} />
+                  <CFormInput type="text" id="staticEmail" value={lecturer.iName} readOnly plainText />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -107,7 +122,7 @@ const LecturerInfoPage = () => {
                   Giới tính
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="inputPassword" value={lecturer.gender || ''} />
+                  <CFormInput type="text" id="inputPassword" value={lecturer.gender} readOnly plainText />
                 </CCol>
               </CRow>
 
@@ -116,15 +131,15 @@ const LecturerInfoPage = () => {
                   Ngày sinh
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="dateTime-local" id="staticEmail" value={lecturer.birth || ''} />
+                  <CFormInput type="text" id="birth" defaultValue = { dateFormat(lecturer.birth, 'dd/mm/yyyy') } readOnly plainText/>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="inputPassword" className="col-sm-2 col-form-label">
                   Địa chỉ
                 </CFormLabel>
-                <CCol sm={10}>
-                  <CFormInput type="text" id="inputPassword" value={lecturer.address || ''} />
+                <CCol sm={7}>
+                  <CFormInput type="text" id="inputPassword" value={lecturer.address} />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -132,7 +147,7 @@ const LecturerInfoPage = () => {
                   Quê quán
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="inputPassword" value={lecturer.homeTown || ''} />
+                  <CFormInput type="text" id="inputPassword" value={lecturer.homeTown} readOnly plainText />
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -140,7 +155,7 @@ const LecturerInfoPage = () => {
                   Email
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="inputPassword" value={lecturer.email || ''} />
+                  <CFormInput type="text" id="inputPassword" value={lecturer.email} readOnly plainText />
                 </CCol>
               </CRow>
 
@@ -148,8 +163,13 @@ const LecturerInfoPage = () => {
                 <CFormLabel htmlFor="staticEmail" className="col-sm-2 col-form-label">
                   Số điện thoại
                 </CFormLabel>
-                <CCol sm={10}>
-                  <CFormInput type="number" id="staticEmail" value={lecturer.phoneNumber || ''} />
+                <CCol sm={2}>
+                <div className="d-flex flex-row w-100">
+                  <div className="d-flex flex-row m-1">(+84)</div>
+                  <div className="d-flex flex-row w-100">
+                      <CFormInput type="text" id="phoneNumber" value={phoneNumber} onChange = {handleChange1}/>
+                  </div>
+                </div>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -157,7 +177,7 @@ const LecturerInfoPage = () => {
                   Học vị
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="degree" value={lecturer.degree || ''} />
+                  <CFormInput type="text" id="degree" value={lecturer.degree} readOnly plainText />
                 </CCol>
               </CRow>
 
@@ -177,7 +197,7 @@ const LecturerInfoPage = () => {
         columns={columns}
         columnFilter
         columnSorter
-        items={usersData}
+        items={project}
         itemsPerPageSelect
         itemsPerPage={20}
         pagination
@@ -193,7 +213,7 @@ const LecturerInfoPage = () => {
             return (
               <td className="py-2">
                 <CInputGroup className="mb-3">
-                  <Link to={`/projectDetail/${item.id}`}>
+                  <Link to={`/projectDetail/${item.projectId}`}>
                     <CButton color="primary">More</CButton>
                   </Link>
                 </CInputGroup>

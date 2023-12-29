@@ -59,7 +59,6 @@ const PersonalInfoPage = () => {
     const fetchApi = async () => {
       studentInfo.phoneNumber = await document.getElementById('phoneNumber').value
       studentInfo.address = await document.getElementById('address').value
-      console.log(studentInfo)
       const updateStudent = await studentServices.updateStudent(account.email, studentInfo)
       addToast(exampleToast)
       //alert('Cập nhật thành công')

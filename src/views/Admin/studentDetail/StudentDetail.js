@@ -21,230 +21,37 @@ import {
 } from '@coreui/react'
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import * as studentServices from '../../../apiServices/studentServices'
+import * as projectServices from '../../../apiServices/projectServices'
+import dateFormat from 'dateformat'
 
 const StudentDetail = () => {
   const { id } = useParams()
   const [details, setDetails] = useState([])
-  const [item, setItem] = useState(null)
+  const [student, setStudent] = useState(null)
+  const [project, setProject] = useState(null)
   const [activeKey, setActiveKey] = useState(1)
-  const usersData = [
-    {
-      id: 20520406,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 2,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 3,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: 'In20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 4,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: 'P20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 5,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 6,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 7,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 8,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: 'In20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 9,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: 'P20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 10,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 11,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 12,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 13,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: 'In20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 14,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: 'P20520544@gm.uit.edu.vn',
-    },
-    {
-      id: 15,
-      code: 20520544,
-      name: 'Nguyễn Huỳnh Gia Huy',
-      gender: 'Male',
-      birth: '1/1/2002',
-      hometown: 'Bình Dương',
-      address: 'Dĩ An, Bình Dương',
-      phonenumber: '0987654321',
-      term: 'K15',
-      password: '128822195123',
-      email: '20520544@gm.uit.edu.vn',
-    },
-  ]
   const columns = [
     {
-      key: 'name',
+      key: 'projectName',
       _style: { width: '40%', fontSize: 17 },
       filter: false,
       sorter: false,
     },
     {
-      key: 'lecturer',
+      key: 'student1Id',
       _style: { fontSize: 17 },
       filter: false,
       sorter: false,
     },
     {
-      key: 'student_1',
+      key: 'student2Id',
       _style: { fontSize: 17 },
       filter: false,
       sorter: false,
     },
     {
-      key: 'student_2',
+      key: 'subjectId',
       _style: { fontSize: 17 },
       filter: false,
       sorter: false,
@@ -255,34 +62,6 @@ const StudentDetail = () => {
       _style: { width: '1%' },
       filter: false,
       sorter: false,
-    },
-  ]
-  const topic = [
-    {
-      id: 1,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 2,
-      name: 'Ứng dụng đi chợ trực tuyến',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
     },
   ]
   const toggleDetails = (index) => {
@@ -297,13 +76,18 @@ const StudentDetail = () => {
   }
   useEffect(() => {
     // Find the item in the array based on the ID
-    const selectedItem = usersData.find((item) => item.id === parseInt(id))
-    setItem(selectedItem)
+    const fetchApi = async () => {
+      const result = await studentServices.getStudentbyID(id)
+      const result1 = await projectServices.getProjectbyStudent(id)
+      setStudent(result)
+      setProject(result1)
+    }
+    fetchApi()
   }, [id])
 
   return (
     <div>
-      {item ? (
+      {student ? (
         <div>
           <br />
           <h1 style={{ fontSize: 20 }}>Student profile</h1>
@@ -312,38 +96,38 @@ const StudentDetail = () => {
               <CCol xs={3} style={{ paddingLeft: 0 }}>
                 <CCard>
                   <CCardBody>
-                    <p>{item.name}</p>
+                    <p>{student.sName}</p>
                     <p>
                       <strong>Student&apos;s code: </strong>
-                      {item.code}
+                      {student.studentId}
                     </p>
                     <p>
                       <strong>Term: </strong>
-                      {item.term}
+                      {student.termId}
                     </p>
                     <p>
                       <strong>Gender: </strong>
-                      {item.gender}
+                      {student.gender}
                     </p>
                     <p>
                       <strong>Birthday: </strong>
-                      {item.birth}
+                      {dateFormat(student.birth, 'dd/mm/yyyy')}
                     </p>
                     <p>
                       <strong>Hometown: </strong>
-                      {item.hometown}
+                      {student.hometown}
                     </p>
                     <p>
                       <strong>Address: </strong>
-                      {item.address}
+                      {student.address}
                     </p>
                     <p>
                       <strong>Phone Number: </strong>
-                      {item.phonenumber}
+                      {student.phonenumber}
                     </p>
                     <p>
                       <strong>Email: </strong>
-                      {item.email}
+                      {student.email}
                     </p>
                   </CCardBody>
                 </CCard>
@@ -362,7 +146,7 @@ const StudentDetail = () => {
                       <CTabPane visible={activeKey === 1}>
                         <CSmartTable
                           columns={columns}
-                          items={topic}
+                          items={project}
                           scopedColumns={{
                             show_details: (item) => {
                               return (
@@ -373,17 +157,17 @@ const StudentDetail = () => {
                                     shape="square"
                                     size="sm"
                                     onClick={() => {
-                                      toggleDetails(item.id)
+                                      toggleDetails(item.projectId)
                                     }}
                                   >
-                                    {details.includes(item.id) ? 'Hide' : 'Show'}
+                                    {details.includes(item.projectId) ? 'Hide' : 'Show'}
                                   </CButton>
                                 </td>
                               )
                             },
                             details: (item) => {
                               return (
-                                <CCollapse visible={details.includes(item.id)}>
+                                <CCollapse visible={details.includes(item.projectId)}>
                                   <CCardBody className="p-3">
                                     <CFormLabel htmlFor="basic-url">Details</CFormLabel>
                                     <CInputGroup className="mb-3">
@@ -414,7 +198,7 @@ const StudentDetail = () => {
                                     </CInputGroup>
                                     <CFormLabel htmlFor="basic-url">Project</CFormLabel>
                                     <CInputGroup className="mb-3">
-                                      <Link to={`/projectDetail/${item.id}`}>
+                                      <Link to={`/projectDetail/${item.projectId}`}>
                                         {/* Use the CoreUI button component */}
                                         <CButton color="primary">More detail</CButton>
                                       </Link>

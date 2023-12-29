@@ -84,7 +84,7 @@ const Login = () => {
         // console.log(fullAccount)
         const fetchApi1 = async () => {
             {fullAccount.accountTypeId == 1 ? (navigate('/Topic')):
-            fullAccount.accountTypeId == 2 ? (navigate('/LecturerInfoPage')) : 
+            fullAccount.accountTypeId == 2 ? (navigate('/CurrentProjectForInstructor')) : 
             fullAccount.accountTypeId == 3 ? (navigate('/Project')) :(<></>)}   
           }
           fetchApi1();

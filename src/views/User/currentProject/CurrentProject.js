@@ -61,7 +61,8 @@ const CurrentProject = () => {
   const [visibleXL, setVisibleXL] = useState(false)
   const [visible, setVisible] = useState(false)
   const [activeKey, setActiveKey] = useState(1)
-  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedDate1, setSelectedDate1] = useState('')
+  const [selectedDate2, setSelectedDate2] = useState('')
   const [toast, addToast] = useState(0)
   const [message, SetMessage] = useState()
   const [question, SetQuestion] = useState()
@@ -98,22 +99,24 @@ const CurrentProject = () => {
 
   const addProgress = () => {
 
-    if (Date.parse(document.getElementById('startDate').value) > Date.parse(document.getElementById('endDate').value)) {
-        alert('Ngày kết thúc dự kiến không thể trước ngày tạo dự án');
+    if (!document.getElementById('sID').value || !document.getElementById('task').value || !selectedDate1 || !selectedDate2 ) {
+        SetMessage("Please fill all the blank!")
         return;
     }
 
     projectProgress.projectId = project.projectId
     projectProgress.studentID = document.getElementById('sID').value
     projectProgress.progressName = document.getElementById('task').value
-    projectProgress.startDate = selectedDate
-    projectProgress.endDate = document.getElementById('endDate').value
+    projectProgress.startDate = selectedDate1
+    projectProgress.endDate = selectedDate2
     
 
     const fetchApi = async () => {
       const progressResult = await projectProgressServices.createProjectProgress(projectProgress)
       const result4 = await projectProgressServices.GetProjectProgressByProjectID(project.projectId)
       SetProgress(result4)
+      SetMessage("Add new progress successful!")
+
     }
     fetchApi()
     setVisibleXL(!visibleXL)
@@ -181,15 +184,14 @@ const CurrentProject = () => {
   const handleFileUpload = async (event) => {
     setFile(event.target.files[0])
   }
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value)
+  const handleDate1Change = (event) => {
+    setSelectedDate1(event.target.value)
+  }
+
+  const handleDate2Change = (event) => {
+    setSelectedDate2(event.target.value)
   }
   const addTag = () => {
-
-    // if (Date.parse(document.getElementById('startDate').value) > Date.parse(document.getElementById('endDate').value)) {
-    //     alert('Ngày kết thúc dự kiến không thể trước ngày tạo dự án');
-    //     return;
-    // }
 
     projectDetailInput.tagID = document.getElementById('tagID').value
     projectDetailInput.projectId = project.projectId
@@ -203,6 +205,7 @@ const CurrentProject = () => {
       SetProjectDetail(result5)
     }
     fetchApi()
+    SetMessage("Add new tag successful!")
     setVisible(!visible)
   }
 
@@ -312,23 +315,33 @@ const CurrentProject = () => {
     <div>
       {item ? (
         <div>
-          <CCard>
-            <CCardBody>
-              <h1 style={{ fontSize: 24 }}>{item.projectName}</h1>
-              <CContainer>
-                <CRow>
-                  <CCol xs="1" style={{ paddingLeft: 0 }}>
-                    <CBadge color="success" style={{ fontSize: 14 }}>
-                      Project {item.subjectId}
-                    </CBadge>
-                  </CCol>
-                  <CCol xs="11">
-                    <p>Lecturer: {instructor}</p>
-                  </CCol>
-                </CRow>
-              </CContainer>
-            </CCardBody>
-          </CCard>
+            <CCard>
+              <CRow>
+                <CCol sm="10">
+                  <CCardBody>
+                    <h1 style={{ fontSize: 24 }}>{item.projectName}</h1>
+                    <CContainer>
+                      <CRow>
+                        <CCol xs="2" style={{ paddingLeft: 0 }}>
+                          <CBadge color="success" style={{ fontSize: 14 }}>
+                            Project {item.subjectId}
+                          </CBadge>
+                        </CCol>
+                        <CCol xs="10">
+                          <p>Lecturer: {item.iName}</p>
+                        </CCol>
+                      </CRow>
+                    </CContainer>
+                  </CCardBody>
+                </CCol>
+                <CCol sm="2">            
+                  <CCardBody>
+                    <p style={{ textAlign:'center' }}>Point: </p>
+                    <p style={{ fontSize: 18, textAlign:'center' }}><strong>{item.point}</strong></p>
+                  </CCardBody>
+                </CCol>
+              </CRow>
+            </CCard>
           <br />
           <h1 style={{ fontSize: 20 }}>Students participate</h1>
           <CContainer style={{ fontSize: 18 }}>
@@ -343,7 +356,7 @@ const CurrentProject = () => {
 
                 </CCard>
               </CCol>
-              <CCol xs={6}>
+              <CCol xs={6} style={{ paddingRight: 0 }}>
                 <CCard>
                 {student2 ? (                  
                 <CCardBody>
@@ -441,9 +454,9 @@ const CurrentProject = () => {
                             </CInputGroup>
                             <CInputGroup className="mb-3">
                                 <CInputGroupText id="start">Start date</CInputGroupText>
-                                <CFormInput type="date" id="startDate" value={selectedDate} onChange={handleDateChange}/>
+                                <CFormInput type="date" id="startDate" value={selectedDate1} max={selectedDate2} onChange={handleDate1Change}/>
                                 <CInputGroupText id="end">End date</CInputGroupText>
-                                <CFormInput type="date" id="endDate" min={selectedDate}/>
+                                <CFormInput type="date" id="endDate" value={selectedDate2} min={selectedDate1} onChange={handleDate2Change}/>
                             </CInputGroup>
                         <div className="gap-2 d-md-flex justify-content-md-end">
                             <CButton color="info" onClick={() => addProgress()}>

@@ -2,15 +2,13 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { CSmartTable } from '@coreui/react-pro'
 import readXlsxFile from 'read-excel-file'
-import * as topicServices from '../../../apiServices/topicServices'
+import * as accountServices from '../../../apiServices/accountServices'
 import {
   CCardBody,
   CButton,
   CCollapse,
   CRow,
   CCol,
-  CContainer,
-  CFormCheck,
   CFormInput,
   CModal,
   CModalHeader,
@@ -27,7 +25,7 @@ import {
 const AccountManager = () => {
   const [details, setDetails] = useState([])
   const [items, setItems] = useState([])
-  const [topic, setTopic] = useState([])
+  const [account, setAccount] = useState([])
   const [visibleXL, setVisibleXL] = useState(false)
   const [visibleSm, setVisibleSm] = useState(false)
   const [selectedValue, setSelectedValue] = useState(null)
@@ -61,26 +59,6 @@ const AccountManager = () => {
       sorter: false,
     },
   ]
-  const accountData = [
-    {
-      accountId: '1',
-      email: '20520544@gm.uit.edu.vn',
-      pwd: '123',
-      accountTypeId: '2',
-    },
-    {
-      accountId: '2',
-      email: '20520406@gm.uit.edu.vn',
-      pwd: '123',
-      accountTypeId: '2',
-    },
-    {
-      accountId: '3',
-      email: 'dungta@gm.uit.edu.vn',
-      pwd: '123',
-      accountTypeId: '1',
-    },
-  ]
   const toggleDetails = (index) => {
     const position = details.indexOf(index)
     let newDetails = details.slice()
@@ -91,53 +69,53 @@ const AccountManager = () => {
     }
     setDetails(newDetails)
   }
-  const deleteTopic = (index) => {
-    const fetchApi = async () => {
-      const result = await topicServices.deleteTopic(index)
-      const result1 = await topicServices.getTopic()
-      setTopic(result1)
-    }
-    fetchApi()
-  }
-  const handleItemClick = (value) => {
-    setSelectedValue(value)
-  }
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0]
-    const rows = await readXlsxFile(file)
-    const headers = rows[0]
-    const data = rows.slice(1).map((row) => {
-      return headers.reduce((obj, header, index) => {
-        obj[header] = row[index]
-        return obj
-      }, {})
-    })
-    setItems(data)
-  }
-  const addTopics = () => {
-    const fetchApi = async () => {
-      var promises = []
-      for (var i = 0; i < items.length; i++) {
-        const result = await topicServices.createTopic(items[i])
-        const result1 = await topicServices.getTopic()
-        promises.push(result)
-        setTopic(result1)
-      }
-      setItems(null)
-      Promise.all(promises)
-    }
-    fetchApi()
-  }
+  // const deleteTopic = (index) => {
+  //   const fetchApi = async () => {
+  //     const result = await topicServices.deleteTopic(index)
+  //     const result1 = await topicServices.getTopic()
+  //     setTopic(result1)
+  //   }
+  //   fetchApi()
+  // }
+  // const handleItemClick = (value) => {
+  //   setSelectedValue(value)
+  // }
+  // const handleFileUpload = async (event) => {
+  //   const file = event.target.files[0]
+  //   const rows = await readXlsxFile(file)
+  //   const headers = rows[0]
+  //   const data = rows.slice(1).map((row) => {
+  //     return headers.reduce((obj, header, index) => {
+  //       obj[header] = row[index]
+  //       return obj
+  //     }, {})
+  //   })
+  //   setItems(data)
+  // }
+  // const addTopics = () => {
+  //   const fetchApi = async () => {
+  //     var promises = []
+  //     for (var i = 0; i < items.length; i++) {
+  //       const result = await topicServices.createTopic(items[i])
+  //       const result1 = await topicServices.getTopic()
+  //       promises.push(result)
+  //       setTopic(result1)
+  //     }
+  //     setItems(null)
+  //     Promise.all(promises)
+  //   }
+  //   fetchApi()
+  // }
   useEffect(() => {
     const fetchApi = async () => {
-      const result = await topicServices.getTopic()
-      setTopic(result)
+      const result = await accountServices.getAccount()
+      setAccount(result)
     }
     fetchApi()
   }, [])
   return (
     <div>
-      <div className="gap-2 d-md-flex justify-content-md-end">
+      {/* <div className="gap-2 d-md-flex justify-content-md-end">
         <CButton onClick={() => setVisibleXL(!visibleXL)}>Add from Excel</CButton>
         <CModal
           size="xl"
@@ -258,13 +236,13 @@ const AccountManager = () => {
             </div>
           </CModalBody>
         </CModal>
-      </div>
+      </div> */}
       <CSmartTable
         activePage={2}
         columns={columns}
         columnFilter
         columnSorter
-        items={accountData}
+        items={account}
         itemsPerPageSelect
         itemsPerPage={50}
         pagination
@@ -300,7 +278,7 @@ const AccountManager = () => {
                       color="danger"
                       className="ml-1"
                       onClick={() => {
-                        deleteTopic(item.topicId)
+                        // deleteTopic(item.topicId)
                       }}
                     >
                       Delete
