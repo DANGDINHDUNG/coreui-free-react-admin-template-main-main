@@ -4,9 +4,6 @@ const Topic = React.lazy(() => import('./views/Admin/topic/Topic'))
 const ProjectRegistered = React.lazy(() =>
   import('./views/Admin/projectRegistered/ProjectRegistered'),
 )
-const ProjectAwaitingApproval = React.lazy(() =>
-  import('./views/Admin/projectAwaitingApproval/ProjectAwaitingApproval'),
-)
 const Lecturer = React.lazy(() => import('./views/Admin/lecturer/Lecturer'))
 const Student = React.lazy(() => import('./views/Admin/student/Student'))
 const ProjectDetail = React.lazy(() => import('./views/User/projectDetail/ProjectDetail'))
@@ -18,6 +15,7 @@ const PersonalInfoPage = React.lazy(() => import('./views/User/personalInfoPage/
 const LecturerInfoPage = React.lazy(() => import('./views/User/lecturerInfoPage/LecturerInfoPage'))
 const CurrentProject = React.lazy(() => import('./views/User/currentProject/CurrentProject'))
 const Project = React.lazy(() => import('./views/User/project/Project'))
+const ProjectList = React.lazy(() => import('./views/User/projectList/ProjectList'))
 // Icons
 const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'))
 const routes = [
@@ -25,14 +23,10 @@ const routes = [
   { path: '/topic', name: 'Topic', element: Topic },
   { path: '/projectRegistered', name: 'ProjectRegistered', element: ProjectRegistered },
   { path: '/project', name: 'Project', element: Project },
+  { path: '/projectList', name: 'ProjectList', element: ProjectList },
   { path: '/personalInfoPage', name: 'PersonalInfoPage', element: PersonalInfoPage },
   { path: '/lecturerInfoPage', name: 'LecturerInfoPage', element: LecturerInfoPage },
   { path: '/currentProject', name: 'CurrentProject', element: CurrentProject },
-  {
-    path: '/projectAwaitingApproval',
-    name: 'ProjectAwaitingApproval',
-    element: ProjectAwaitingApproval,
-  },
   { path: '/lecturer', name: 'Lecturer', element: Lecturer },
   { path: '/tag', name: 'Tag', element: Tag },
   { path: '/student', name: 'Student', element: Student },

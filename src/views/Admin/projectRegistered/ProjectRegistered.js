@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CSmartTable } from '@coreui/react-pro'
 import {
   CCardBody,
@@ -14,37 +14,55 @@ import {
   CFormInput,
   CInputGroupText,
 } from '@coreui/react'
+import * as projectServices from '../../../apiServices/projectServices'
 import { Link } from 'react-router-dom'
 
 const ProjectRegistered = () => {
   const [details, setDetails] = useState([])
+  const [project, SetProject] = useState()
+
   const columns = [
     {
-      key: 'id',
-      label: '',
+      key: 'projectId',
+      label: 'Id',
       filter: false,
-      _style: { width: '3%' },
+      sorter: false,
+      _style: { width: '5%' },
     },
     {
-      key: 'name',
+      key: 'projectName',
+      label: 'Project Name',
       _style: { width: '40%' },
     },
     {
-      key: 'description',
+      key: 'request',
+      label: 'Request',
       filter: false,
       sorter: false,
     },
     {
-      key: 'lecturer',
+      key: 'iName',
+      label: 'Instructor',
+      filter: false,
       sorter: false,
     },
     {
-      key: 'student_1',
+      key: 'student1Id',
+      label: 'Student 1',
+      filter: false,
       sorter: false,
     },
     {
-      key: 'student_2',
+      key: 'student2Id',
+      label: 'Student 2',
       sorter: false,
+      filter: false,
+    },
+    {
+      key: 'subjectName',
+      label: 'Subject',
+      sorter: false,
+      filter: false,
     },
     {
       key: 'show_details',
@@ -52,204 +70,6 @@ const ProjectRegistered = () => {
       _style: { width: '1%' },
       filter: false,
       sorter: false,
-    },
-  ]
-  const usersData = [
-    {
-      id: 1,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 2,
-      name: 'Ứng dụng đi chợ trực tuyến',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 3,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      avatar: '3.jpg',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 4,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ănus',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Unregistered',
-    },
-    {
-      id: 5,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 6,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ănu',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 7,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Đinh Nguyễn Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 8,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 9,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 10,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ănš',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 11,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 12,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăns',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 13,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 14,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ănlius',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
-    },
-    {
-      id: 15,
-      name: 'Ứng dụng đi chợ trực tuyến tích hợp gợi ý món ăn',
-      request: 'Yêu thích lập trình Web',
-      lecturer: 'Trần Anh Dũng',
-      description: 'Project 1',
-      student_1: 'Nguyễn Huỳnh Gia Huy',
-      student_2: 'Nguyễn Gia Bảo',
-      semester: 1,
-      year: 2023,
-      point: 10,
-      status: 'Registered',
     },
   ]
   const toggleDetails = (index) => {
@@ -262,37 +82,21 @@ const ProjectRegistered = () => {
     }
     setDetails(newDetails)
   }
+  useEffect(() => { 
+    const fetchApi = async () => {
+        const result = await projectServices.getProject()
+        SetProject(result)
+    }
+    fetchApi()
+  }, [])
   return (
     <div>
-      <CContainer>
-        <CRow>
-          <CCol sm={8}>
-            <CFormCheck
-              button={{ color: 'success', variant: 'outline' }}
-              type="radio"
-              name="options-outlined"
-              id="success-outlined"
-              autoComplete="off"
-              label="Project 1"
-              defaultChecked
-            />
-            <CFormCheck
-              button={{ color: 'danger', variant: 'outline' }}
-              type="radio"
-              name="options-outlined"
-              id="danger-outlined"
-              autoComplete="off"
-              label="Project 2"
-            />
-          </CCol>
-        </CRow>
-      </CContainer>
       <CSmartTable
         activePage={2}
         columns={columns}
         columnFilter
         columnSorter
-        items={usersData}
+        items={project}
         itemsPerPageSelect
         itemsPerPage={20}
         pagination
@@ -313,17 +117,17 @@ const ProjectRegistered = () => {
                   shape="square"
                   size="sm"
                   onClick={() => {
-                    toggleDetails(item.id)
+                    toggleDetails(item.projectId)
                   }}
                 >
-                  {details.includes(item.id) ? 'Hide' : 'Show'}
+                  {details.includes(item.projectId) ? 'Hide' : 'Show'}
                 </CButton>
               </td>
             )
           },
           details: (item) => {
             return (
-              <CCollapse visible={details.includes(item.id)}>
+              <CCollapse visible={details.includes(item.projectId)}>
                 <CCardBody className="p-3">
                   <CFormLabel htmlFor="basic-url">Details</CFormLabel>
                   <CInputGroup className="mb-3">
@@ -355,7 +159,7 @@ const ProjectRegistered = () => {
 
                   <CFormLabel htmlFor="basic-url">Project</CFormLabel>
                   <CInputGroup className="mb-3">
-                    <Link to={`/projectDetail/${item.id}`}>
+                    <Link to={`/projectDetail/${item.projectId}`}>
                       {/* Use the CoreUI button component */}
                       <CButton color="primary">More detail</CButton>
                     </Link>

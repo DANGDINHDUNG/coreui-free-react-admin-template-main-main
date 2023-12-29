@@ -179,7 +179,7 @@ const PersonalInfoPage = () => {
                   Student&apos;s code
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="studentID" value={student.studentId} readOnly/>
+                  <CFormInput type="text" id="studentID" value={student.studentId} readOnly plainText/>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -187,7 +187,7 @@ const PersonalInfoPage = () => {
                   Họ và tên
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="sName" value={student.sName} readOnly/>
+                  <CFormInput type="text" id="sName" value={student.sName} readOnly plainText/>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -195,7 +195,7 @@ const PersonalInfoPage = () => {
                   Giới tính
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="gender" value={student.gender} readOnly/>
+                  <CFormInput type="text" id="gender" value={student.gender} readOnly plainText/>
                 </CCol>
               </CRow>
   
@@ -204,14 +204,14 @@ const PersonalInfoPage = () => {
                   Ngày sinh
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="birth" defaultValue = { dateFormat(student.birth, 'dd/mm/yyyy') } readOnly/>
+                  <CFormInput type="text" id="birth" defaultValue = { dateFormat(student.birth, 'dd/mm/yyyy') } readOnly plainText/>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="inputPassword" className="col-sm-2 col-form-label">
                   Địa chỉ
                 </CFormLabel>
-                <CCol sm={10}>
+                <CCol sm={7}>
                   <CFormInput type="text" id="address" defaultValue={student.address} />
                 </CCol>
               </CRow>
@@ -220,7 +220,7 @@ const PersonalInfoPage = () => {
                   Quê quán
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="homeTown" value={student.homeTown} readOnly/>
+                  <CFormInput type="text" id="homeTown" value={student.homeTown} readOnly plainText/>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -228,7 +228,7 @@ const PersonalInfoPage = () => {
                   Email
                 </CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="email" value={student.email} readOnly/>
+                  <CFormInput type="text" id="email" value={student.email} readOnly plainText/>
                 </CCol>
               </CRow>
   
@@ -236,7 +236,7 @@ const PersonalInfoPage = () => {
                 <CFormLabel htmlFor="staticEmail" className="col-sm-2 col-form-label">
                   Số điện thoại
                 </CFormLabel>
-                <CCol sm={10}>
+                <CCol sm={2}>
                 <div className="d-flex flex-row w-100">
                   <div className="d-flex flex-row m-1">(+84)</div>
                   <div className="d-flex flex-row w-100">

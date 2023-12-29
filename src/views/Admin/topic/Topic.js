@@ -27,8 +27,6 @@ const Topic = () => {
   const [isChecked1, setIsChecked1] = useState(false)
   const [isChecked2, setIsChecked2] = useState(false)
 
-  var account = JSON.parse(sessionStorage.getItem('account'));
-
   const columns = [
     {
       key: 'topicId',

@@ -43,12 +43,6 @@ const Student = () => {
       filter: false,
     },
     {
-      key: 'birth',
-      _style: { width: '10%' },
-      filter: false,
-      sorter: false,
-    },
-    {
       key: 'homeTown',
       _style: { width: '10%' },
       sorter: false,
@@ -91,7 +85,7 @@ const Student = () => {
   ]
   useEffect(() => {
     const fetchApi = async () => {
-      const result = await studentServices.getStudent()
+      const result = await studentServices.getStudent();
       setStudent(result)
     }
     fetchApi()

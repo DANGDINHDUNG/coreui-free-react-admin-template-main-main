@@ -44,7 +44,7 @@ import {
 } from '@coreui/react'
 import { cilCursor } from '@coreui/icons'
 
-const ProjectDetail = () => {
+const CurrentProject = () => {
   const [item, setItem] = useState(null)
   const [instructor, setInstructor] = useState()
   const [student1, SetStudent1] = useState()
@@ -64,6 +64,7 @@ const ProjectDetail = () => {
   const [selectedDate, setSelectedDate] = useState('')
   const [toast, addToast] = useState(0)
   const [message, SetMessage] = useState()
+  const [question, SetQuestion] = useState()
   const toaster = useRef()
 
   var account = JSON.parse(sessionStorage.getItem('account'))
@@ -120,9 +121,8 @@ const ProjectDetail = () => {
   const UploadFile = async () => {
     //e.preventDefault()
     //var newId = Number(id);
-    SetMessage("Please input file!")
     if (file == null) {
-      await addToast(exampleToast)
+      SetMessage("Please input file!")
       return
     }
     else {
@@ -143,7 +143,7 @@ const ProjectDetail = () => {
           }
           var newProjectResource = await GetResources();
           const result1 = await projectResourceServices.createProjectResource(newProjectResource);
-          addToast(exampleToast)
+          SetMessage("Add file success!")
           const fetchApi2 = async () => {
             const result = await projectServices.GetCurrentProject(account.email)
             SetProject(result)
@@ -180,8 +180,6 @@ const ProjectDetail = () => {
 
   const handleFileUpload = async (event) => {
     setFile(event.target.files[0])
-    SetMessage("Add file success!")
-
   }
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value)
@@ -210,7 +208,26 @@ const ProjectDetail = () => {
 
   const handleChange = (e) => {
     setSelectedOption(e.target.value);
-  };
+  }
+
+  const handleQuestion = (e) => {
+    SetQuestion(e.target.value)
+  }
+
+  const askQuestion = () => {
+    if (!question) {
+      SetMessage("Please fill the blank");      
+    }
+    else {
+      SetMessage("Ask questions via email successfully")
+    }
+  }
+
+  useEffect(()=>{if(message){
+    addToast(exampleToast);
+  }}, [message])
+
+
 
   useEffect(() => { 
     const fetchApi = async () => {
@@ -364,6 +381,11 @@ const ProjectDetail = () => {
                     File
                   </CNavLink>
                 </CNavItem>
+                <CNavItem>
+                  <CNavLink active={activeKey === 5} onClick={() => setActiveKey(5)}>
+                    Question
+                  </CNavLink>
+                </CNavItem>
               </CNav>
               <CTabContent>
                 <CTabPane visible={activeKey === 1}>
@@ -488,6 +510,15 @@ const ProjectDetail = () => {
                       </CListGroup>
                     </div>
                 </CTabPane>
+                <CTabPane visible={activeKey === 5}>
+                  <div className="gap-2 d-md-flex justify-content-md-start m-3">
+                    <div className="d-flex w-100">
+                      <CFormTextarea  type="textArea" onChange={handleQuestion} aria-describedby="basic-addon3" placeholder='Add a question' plainText/>
+                    </div>             
+                  </div>
+                  <CButton className="" color='primary' onClick={askQuestion}>Make a question</CButton>
+                    <CToaster ref={toaster} push={toast} placement="top-end" />   
+                </CTabPane>
               </CTabContent>
             </CCardBody>
           </CCard>
@@ -499,5 +530,5 @@ const ProjectDetail = () => {
   )
 }
 
-export default ProjectDetail
+export default CurrentProject
 /*  */

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { CSmartTable } from '@coreui/react-pro'
 import * as projectServices from '../../../apiServices/projectServices'
 import * as instructorServices from '../../../apiServices/instructorServices'
+import * as projectResourceServices from '../../../apiServices/projectResourceServices'
 import * as studentServices from '../../../apiServices/studentServices'
 import * as projectProgressServices from '../../../apiServices/projectProgressServices'
 import * as projectDetailServices from '../../../apiServices/projectDetailServices'
@@ -30,6 +31,8 @@ import { useParams } from 'react-router-dom'
 const ProjectDetail = () => {
   const { id } = useParams()
   const [item, setItem] = useState()
+  const [files, setFiles] = useState([])
+  const [links, setLinks] = useState([])
   const [student1, SetStudent1] = useState()
   const [student2, SetStudent2] = useState(null)
   const [activeKey, setActiveKey] = useState(1)
@@ -46,7 +49,14 @@ const ProjectDetail = () => {
           SetStudent2(result3.sName)
           console.log("Not null")
         }
-
+        var fileArr = [];
+        const fileResult = await projectResourceServices.getProjectResourcebyID(result[0].projectId);
+        setFiles(fileResult);
+        
+        for (var i = 0; i < fileResult.length; i++) {
+          fileArr.push(fileResult[i].resourcesName)
+        }
+        setLinks(fileArr);
         const result4 = await projectProgressServices.GetProjectProgressByProjectID(result[0].projectId)
         const result5 = await projectDetailServices.getTagByProjectID(result[0].projectId)
         SetStudent1(result2.sName)
@@ -174,7 +184,19 @@ const ProjectDetail = () => {
                     ))}     
                   </CListGroup>
                 </CTabPane>
-                <CTabPane visible={activeKey === 4}>Content for Tab 4</CTabPane>
+                <CTabPane visible={activeKey === 4}>
+                  <div className="d-flex w-100 m-3">
+                    <CListGroup accent="success">
+                      {files.map((item)=>(
+                          <CListGroupItem key={item.resourcesId}>
+                            <div className="d-flex flex-row">
+                              <a href={item.filePath}>{item.resourcesName}</a>
+                            </div>
+                        </CListGroupItem>
+                      ))}       
+                    </CListGroup>
+                  </div>
+                </CTabPane>
               </CTabContent>
             </CCardBody>
           </CCard>

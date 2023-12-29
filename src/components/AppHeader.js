@@ -56,12 +56,7 @@ const AppHeader = () => {
               <CNavLink to="/projectRegistered" component={NavLink}>
                 Project Registered
               </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink to="/projectAwaitingApproval" component={NavLink}>
-                Project Awaiting Approval
-              </CNavLink>
-            </CNavItem>
+            </CNavItem>            
             <CNavItem>
               <CNavLink to="/accountManager" component={NavLink}>
                 Account Manager
@@ -126,6 +121,11 @@ const AppHeader = () => {
             <CNavItem>
               <CNavLink to="/currentProject" component={NavLink}>
                 Current Project
+              </CNavLink>
+            </CNavItem>          
+            <CNavItem>
+              <CNavLink to="/projectList" component={NavLink}>
+                Project List
               </CNavLink>
             </CNavItem>          
           </CHeaderNav>
